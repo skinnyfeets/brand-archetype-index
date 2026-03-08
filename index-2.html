@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brand Archetype Index</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #F7F5F0; font-family: 'DM Sans', sans-serif; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, useRef } = React;
+
+    const ARCHETYPES = [
+      { id:"hero", name:"Hero", emoji:"⚔️", common:true, nouns:["Warrior","Champion","Defender","Victor","Leader"], core:"Courage, mastery, and the will to overcome challenges.", brandVoice:"Bold, direct, inspiring, achievement-focused.", brands:"Nike, FedEx, Duracell, BMW", color:"#C0392B", bg:"#FDF0EE", category:"Power", description:"The Hero brand motivates people to push past limits. It speaks to achievement, discipline, and the triumph of will over adversity. Best for performance, sport, or mission-driven organizations.", tension:"Can feel aggressive or exclusive if not balanced with purpose.", storyHook:"The underdog who trains harder than anyone to win when it counts most.", mythology:"Rooted in ancient myths of Heracles (Greek) and Achilles, the Hero appears in virtually every culture's foundational stories. Joseph Campbell codified the 'Hero's Journey' in The Hero with a Thousand Faces (1949), drawing on Jungian psychology. The pattern runs through Beowulf, The Odyssey, Star Wars (Luke Skywalker), The Matrix (Neo), and Marvel's entire cinematic universe. Carl Jung saw the Hero archetype as the ego's struggle against the shadow — the fundamental human drive to overcome fear and prove worth.", origin:"Carl Jung (1875–1961) / Joseph Campbell (1949)", famousExamples:"Achilles (Iliad), Heracles (Greek myth), Beowulf, Luke Skywalker (Star Wars), Frodo (LOTR), Katniss Everdeen (Hunger Games)" },
+      { id:"outlaw", name:"Outlaw", emoji:"🏴‍☠️", common:true, nouns:["Rebel","Maverick","Revolutionary","Renegade","Bandit"], core:"Revolution, liberation, and the thrill of breaking the rules.", brandVoice:"Provocative, raw, counter-cultural, uncompromising.", brands:"Harley-Davidson, Virgin, Diesel, Napster", color:"#922B21", bg:"#FDEDEC", category:"Power", description:"The Outlaw brand exists to disrupt the status quo. It appeals to those who feel the rules were written by someone else, for someone else. Powerful for challenger brands, subcultures, and movements that define themselves against an establishment.", tension:"Risk of romanticizing harm or alienating mainstream audiences.", storyHook:"The fugitive who turns out to be the only honest person in the story.", mythology:"The Outlaw appears in mythology as Prometheus (who stole fire from the gods), Loki (Norse trickster-rebel), and Robin Hood. In American culture it crystallised around outlaws like Jesse James and Billy the Kid — figures romanticised precisely because they rejected a system many found corrupt. Carl Jung called this shadow energy the 'Revolutionary.' Mark and Pearson (The Hero and the Outlaw, 2001) formalised it as a brand archetype.", origin:"Margaret Mark & Carol S. Pearson — The Hero and the Outlaw (2001)", famousExamples:"Prometheus (Greek myth), Robin Hood, Jesse James, Tyler Durden (Fight Club), V (V for Vendetta), Deadpool" },
+      { id:"magician", name:"Magician", emoji:"✨", common:true, nouns:["Alchemist","Visionary","Transformer","Mystic","Illusionist"], core:"Transformation, wonder, and making dreams reality.", brandVoice:"Mystical, inspiring, transformative, enchanting.", brands:"Disney, Dyson, Apple, Polaroid", color:"#5B2C6F", bg:"#F5EEF8", category:"Expression", description:"The Magician brand promises transformation — of the self, of life, of what's possible. It creates moments of wonder and makes the complex feel effortless. Ideal for tech, entertainment, and wellness brands.", tension:"Can feel overpromised or manipulative if results don't match claims.", storyHook:"The moment when something impossible becomes not just possible, but inevitable.", mythology:"Magician figures appear across all mythologies: Merlin in Arthurian legend, Thoth in Egyptian mythology, Gandalf in Tolkien's Middle-earth. Jung identified this as the 'Wise Magician' — a figure who understands hidden laws and uses them to transform reality.", origin:"Carl Jung (Wise Old Man / Magician archetype) / Mark & Pearson (2001)", famousExamples:"Merlin (Arthurian legend), Gandalf (LOTR), Dumbledore (Harry Potter), Oz (Wizard of Oz), Doctor Strange" },
+      { id:"lover", name:"Lover", emoji:"💫", common:true, nouns:["Romantic","Partner","Companion","Admirer","Devotee"], core:"Desire, intimacy, and celebrating beauty.", brandVoice:"Sensual, passionate, devoted, indulgent.", brands:"Chanel, Häagen-Dazs, Victoria's Secret, Alfa Romeo", color:"#B03A2E", bg:"#FDEDEC", category:"Connection", description:"The Lover brand creates desire and emotional intimacy. It helps people feel beautiful, special, and connected. Ideal for beauty, fragrance, fashion, food, and any brand where pleasure is central.", tension:"Can feel shallow or superficial if not grounded in genuine quality.", storyHook:"The slow moment that you replay because it felt too good to be real.", mythology:"Aphrodite (Greek) and Venus (Roman) are the archetypal Lover deities. In literature: Romeo and Juliet, Tristan and Isolde, Antony and Cleopatra. The Lover archetype in Jungian psychology is linked to the Anima/Animus.", origin:"Carl Jung (Anima/Animus) / Mark & Pearson (2001)", famousExamples:"Aphrodite (Greek myth), Romeo & Juliet (Shakespeare), Jay Gatsby (The Great Gatsby), Elizabeth Bennet (Pride & Prejudice)" },
+      { id:"jester", name:"Jester", emoji:"🎭", common:true, nouns:["Comedian","Trickster","Satirist","Fool","Performer"], core:"Challenging the status quo through mockery, joy, and irreverence.", brandVoice:"Playful, witty, subversive, energetic.", brands:"Old Spice, M&Ms, Ben & Jerry's, Cards Against Humanity", color:"#D4AC0D", bg:"#FEFDE7", category:"Expression", description:"The Jester brand uses humor as a weapon and a gift. It challenges conventions through laughter rather than confrontation. Best for brands that use wit to disrupt norms without taking themselves seriously.", tension:"Can undermine credibility in high-stakes or serious categories.", storyHook:"The court fool who tells the king what no knight dared say — and gets away with it.", mythology:"Shakespeare's fools (King Lear's Fool, Feste in Twelfth Night) were uniquely licensed to speak truth to power through comedy. In mythology: Loki (Norse), Coyote (Native American), Anansi (West African).", origin:"Carl Jung (Trickster archetype) / Mark & Pearson (2001)", famousExamples:"Loki (Norse myth), Anansi (West African folk tales), King Lear's Fool (Shakespeare), Deadpool, Bugs Bunny" },
+      { id:"everyman", name:"Everyman", emoji:"🌍", common:true, nouns:["Citizen","Neighbor","Peer","Regular","Member"], core:"Belonging, community, and egalitarian values.", brandVoice:"Relatable, unpretentious, inclusive, grounded.", brands:"IKEA, eBay, Gap, Budweiser", color:"#5D6D7E", bg:"#F2F3F4", category:"Connection", description:"The Everyman brand is for everyone — no exclusivity, no pretense. It creates a sense of belonging and shared identity. Ideal for mass-market retail, community platforms, and accessible services.", tension:"Can feel generic or undifferentiated in a noisy market.", storyHook:"The ordinary person who, in one small act, speaks for everyone.", mythology:"The Everyman is the anonymous protagonist of the 15th-century English morality play. John Steinbeck's Tom Joad (The Grapes of Wrath), Arthur Miller's Willy Loman (Death of a Salesman), and George Bailey (It's a Wonderful Life) all embody the archetype.", origin:"Anonymous English morality play Everyman (c.1510) / Mark & Pearson (2001)", famousExamples:"Tom Joad (Grapes of Wrath), Willy Loman (Death of a Salesman), George Bailey (It's a Wonderful Life), Forrest Gump" },
+      { id:"caregiver", name:"Caregiver", emoji:"🤝", common:true, nouns:["Nurturer","Guardian","Protector","Healer","Supporter"], core:"Compassion, service, and the wellbeing of others.", brandVoice:"Warm, reassuring, empathetic, safe.", brands:"Johnson & Johnson, UNICEF, Volvo, Campbell's Soup", color:"#1E8449", bg:"#EAFAF1", category:"Connection", description:"The Caregiver brand leads with heart. It prioritizes the needs of its audience above all else and builds deep loyalty through trust and reliability. Best for health, family, and social mission brands.", tension:"Can feel smothering or create dependency rather than empowerment.", storyHook:"The quiet person who shows up without being asked — every single time.", mythology:"The Caregiver appears in mythology as Demeter (Greek goddess of nurture and harvest), the Virgin Mary in Christian tradition, and Kuan Yin in Buddhist tradition. Jung saw this as the Great Mother archetype.", origin:"Carl Jung (Great Mother archetype) / Mark & Pearson (2001)", famousExamples:"Demeter (Greek myth), Kuan Yin (Buddhist), Samwise Gamgee (LOTR), Atticus Finch (To Kill a Mockingbird)" },
+      { id:"creator", name:"Creator", emoji:"🎨", common:true, nouns:["Maker","Builder","Designer","Inventor","Artisan"], core:"Imagination, craft, and building something that endures.", brandVoice:"Expressive, innovative, detailed, aesthetic.", brands:"Adobe, Lego, Apple, Etsy", color:"#6C3483", bg:"#F5EEF8", category:"Expression", description:"The Creator brand is driven by the desire to give form to vision. It values originality, craftsmanship, and self-expression. Ideal for design, technology, arts, and any brand where making things matters.", tension:"Can feel precious or inaccessible if craft isn't communicated simply.", storyHook:"The artist who stares at a blank canvas and sees the finished work before touching it.", mythology:"The Creator traces back to the Demiurge in Platonic philosophy. In mythology: Daedalus (Greek), Hephaestus (divine smith), Brahma (Hindu creator god). Victor Frankenstein (Mary Shelley) is the cautionary Creator tale.", origin:"Plato (Demiurge, c.360 BC) / Mark & Pearson (2001)", famousExamples:"Daedalus (Greek myth), Hephaestus, Victor Frankenstein (Shelley), Willy Wonka, Tony Stark (Iron Man)" },
+      { id:"sage", name:"Sage", emoji:"📚", common:true, nouns:["Scholar","Thinker","Philosopher","Teacher","Advisor"], core:"Truth, knowledge, and the pursuit of wisdom.", brandVoice:"Authoritative, measured, analytical, trustworthy.", brands:"Google, Harvard, BBC, The Economist", color:"#1A5276", bg:"#EBF5FB", category:"Knowledge", description:"The Sage brand positions itself as a trusted source of expertise and insight. It leads with intelligence and values clarity above all. Best for education, media, consulting, and research-led organizations.", tension:"Can feel cold or detached if not anchored in human outcomes.", storyHook:"The mentor who asks one question that changes how you see everything.", mythology:"The Sage is Athena (Greek goddess of wisdom), Sophia, and Confucius. In mythology: Tiresias, the Oracle at Delphi. Jung called this the Wise Old Man/Woman archetype.", origin:"Carl Jung (Wise Old Man archetype) / Mark & Pearson (2001)", famousExamples:"Athena (Greek myth), Tiresias, Confucius, Yoda (Star Wars), Dumbledore (Harry Potter), Sherlock Holmes" },
+      { id:"ruler", name:"Ruler", emoji:"👑", common:true, nouns:["King","Queen","Governor","Sovereign","Authority"], core:"Control, prestige, and excellence through leadership.", brandVoice:"Commanding, refined, aspirational, authoritative.", brands:"Rolex, Mercedes-Benz, American Express, Barclays", color:"#7D6608", bg:"#FEFDE7", category:"Power", description:"The Ruler brand conveys power, premium quality, and leadership. It attracts those who seek to demonstrate success or command respect. Perfect for luxury goods, finance, and enterprise software.", tension:"Can feel elitist or out of touch if audience isn't exclusively premium.", storyHook:"The standard-setter who refuses to compromise because legacy matters more than convenience.", mythology:"The Ruler is Zeus/Jupiter (king of the gods), Osiris (Egyptian god of order), King Arthur (ideal sovereign). King Lear explores the Ruler's shadow — the tyrant who loses power through pride.", origin:"Carl Jung (King/Self archetype) / Mark & Pearson (2001)", famousExamples:"Zeus (Greek myth), King Arthur (Arthurian legend), Mufasa (Lion King), Miranda Priestly (Devil Wears Prada)" },
+      { id:"innocent", name:"Innocent", emoji:"🌸", common:true, nouns:["Dreamer","Believer","Idealist","Optimist","Purist"], core:"Simplicity, goodness, and a purer way of living.", brandVoice:"Honest, optimistic, clean, wholesome.", brands:"Dove, Innocent Smoothies, Aveeno, Coca-Cola (classic)", color:"#2E86C1", bg:"#EBF5FB", category:"Freedom", description:"The Innocent brand evokes purity, simplicity, and a return to what matters. It builds trust through transparency and optimism. Perfect for natural products, wellness, food, and family-oriented brands.", tension:"Can feel naive or disconnected from real-world complexity.", storyHook:"The child who asks the question no adult dared to, and turns out to be right.", mythology:"The Innocent is Eden before the Fall. In mythology: Persephone before her abduction. In literature: Candide (Voltaire), Scout Finch (To Kill a Mockingbird), Forrest Gump. Jung called this the 'Child archetype'.", origin:"Carl Jung (Divine Child archetype) / Mark & Pearson (2001)", famousExamples:"Persephone (before abduction), Candide (Voltaire), Scout Finch (TKAM), Dorothy (Wizard of Oz), Forrest Gump" },
+      { id:"explorer", name:"Explorer", emoji:"🧭", common:true, nouns:["Adventurer","Wanderer","Scout","Trailblazer","Pathfinder"], core:"Freedom, discovery, and the thrill of the unknown.", brandVoice:"Curious, independent, open, horizon-focused.", brands:"Patagonia, Jeep, The North Face, REI", color:"#117A65", bg:"#EAF7F4", category:"Freedom", description:"The Explorer brand champions autonomy and discovery. It draws in those who resist the ordinary and crave new experiences, landscapes, and ideas. Perfect for outdoor, travel, and lifestyle brands.", tension:"Can feel restless or uncommitted to any one community.", storyHook:"The individual who leaves the map behind and finds something no one else has seen.", mythology:"The Explorer is Odysseus on his ten-year journey home. In mythology: Hermes (guide and wanderer), Gilgamesh (the earliest recorded hero's quest, 2100 BC). In literature: Huck Finn (Twain), Bilbo Baggins.", origin:"Gilgamesh Epic (c.2100 BC) / Mark & Pearson (2001)", famousExamples:"Odysseus (Homer), Gilgamesh (Sumerian epic), Huck Finn (Twain), Bilbo Baggins (LOTR), Indiana Jones, Moana" },
+      { id:"artist", name:"Artist", emoji:"🖌️", common:false, nouns:["Painter","Sculptor","Visionary","Craftsperson","Expressionist"], core:"Pure self-expression, beauty for its own sake, and the emotional truth in form.", brandVoice:"Lyrical, emotional, aesthetic, deeply personal.", brands:"Moleskine, Fender, Montblanc, Pantone", color:"#884EA0", bg:"#F5EEF8", category:"Expression", description:"The Artist archetype differs from the Creator in that its primary motivation is expression rather than making. Where the Creator builds, the Artist reveals. The Artist brand prioritises emotional resonance, beauty, and subjective truth over utility.", tension:"Can feel self-indulgent or inaccessible to audiences who prioritise function.", storyHook:"The painting that captures something everyone has felt but never seen before.", mythology:"Apollo (Greek god of arts and poetry) and the nine Muses are the mythological foundation. Orpheus — whose music could move rocks and charm the underworld — is the Artist's most extreme expression.", origin:"Plato's Ion (c.380 BC) — the concept of divine artistic inspiration / Aristotle's Poetics", famousExamples:"Apollo (Greek myth), Orpheus, Leonardo da Vinci, Frida Kahlo, Patti Smith" },
+      { id:"warrior", name:"Warrior", emoji:"🗡️", common:false, nouns:["Soldier","Fighter","Champion","Combatant","Protector"], core:"Discipline, sacrifice, and fighting for something larger than oneself.", brandVoice:"Fierce, disciplined, sacrificial, honour-bound.", brands:"Under Armour, Spartan Race, CrossFit, Ranger chocolate", color:"#922B21", bg:"#FDEDEC", category:"Power", description:"The Warrior differs from the Hero in motivation: the Hero seeks glory, the Warrior serves duty. The Warrior brand speaks to discipline, sacrifice, and the willingness to suffer for a cause. Powerful for fitness and any brand built around voluntary hardship and honour.", tension:"Can feel punishing or exclusive to those who don't share its code of discipline.", storyHook:"The soldier who keeps going long after everyone else has stopped — not for recognition, but because it's right.", mythology:"Ares (Greek god of war) and Mars (Roman) are the Warrior deities. The Bhagavad Gita is perhaps the deepest philosophical meditation on the Warrior archetype — Arjuna's crisis on the battlefield.", origin:"Bhagavad Gita (c.200 BC) / Ares/Mars mythology / Bushidō (Japanese warrior code)", famousExamples:"Achilles (Iliad), Arjuna (Bhagavad Gita), Joan of Arc, Leonidas (300), William Wallace (Braveheart), Mulan" },
+      { id:"guardian", name:"Guardian", emoji:"🛡️", common:false, nouns:["Sentinel","Protector","Watchman","Custodian","Shield"], core:"Vigilance, protection, and keeping what matters safe.", brandVoice:"Steadfast, reliable, serious, protective.", brands:"Norton, ADT, State Farm, Volvo", color:"#1A5276", bg:"#EBF5FB", category:"Power", description:"The Guardian brand stands watch so others don't have to worry. It builds loyalty through consistent, reliable protection. Ideal for insurance, cybersecurity, emergency services, and safety-critical products.", tension:"Can feel fear-based or paternalistic without a positive vision.", storyHook:"The protection you forgot was there — until the moment it mattered most.", mythology:"Guardian figures appear as threshold keepers: Janus (Roman god of doorways), the Sphinx (guardian of Thebes), the Valkyries (Norse choosers of the slain). In Arthurian legend, the Knights of the Round Table collectively embody Guardian energy.", origin:"Janus (Roman mythology) / Knight tradition in medieval literature", famousExamples:"Janus (Roman myth), Valkyries (Norse), Aragorn (LOTR), Alfred Pennyworth (Batman), Ned Stark (Game of Thrones)" },
+      { id:"rebel", name:"Rebel", emoji:"🔥", common:false, nouns:["Dissenter","Agitator","Provocateur","Challenger","Revolutionary"], core:"Challenging unjust systems through direct confrontation and moral conviction.", brandVoice:"Urgent, principled, galvanising, confrontational.", brands:"Patagonia, Ben & Jerry's, Banksy (brand as art), TOMS", color:"#BA4A00", bg:"#FDF2E9", category:"Power", description:"The Rebel differs from the Outlaw in motivation: the Outlaw breaks rules for personal liberation; the Rebel challenges systems on moral grounds. The Rebel brand is defined by conviction and is willing to lose customers for its principles.", tension:"Can alienate audiences who feel lectured; conviction must be backed by action.", storyHook:"The moment one person decides enough is enough — and others follow.", mythology:"The Rebel is Prometheus defying Zeus to give fire to humanity — not for personal gain but for justice. Antigone (Sophocles) refuses Creon's decree on moral grounds and pays with her life — the Rebel's defining story.", origin:"Sophocles' Antigone (441 BC) / Prometheus myth", famousExamples:"Prometheus (Greek myth), Antigone (Sophocles), Rosa Parks, Katniss Everdeen (Hunger Games), Malala Yousafzai" },
+      { id:"trickster", name:"Trickster", emoji:"🦊", common:false, nouns:["Deceiver","Shapeshifter","Schemer","Rogue","Con artist"], core:"Using cleverness, deception, and chaos to expose truth and create change.", brandVoice:"Clever, playful, misdirecting, surprising.", brands:"Innocent (early), Dollar Shave Club, Cards Against Humanity", color:"#E67E22", bg:"#FEF5EC", category:"Expression", description:"The Trickster uses deception not out of malice but to reveal truth and undermine false certainties. Where the Jester performs for an audience, the Trickster operates on them. Brands that use misdirection, surprise, and clever subversion embody this archetype.", tension:"Trust can be permanently damaged if the deception feels targeted rather than playful.", storyHook:"The con that turns out to be the most honest thing that happened all day.", mythology:"The Trickster is one of the most universal archetypes. Loki (Norse) is the paradigm — shape-changing, boundary-crossing, causing chaos that paradoxically advances the story. Coyote (Native American), Anansi (West African), Hermes (Greek).", origin:"Paul Radin — The Trickster (1956) / Carl Jung essay on Trickster", famousExamples:"Loki (Norse), Anansi (West African), Coyote (Native American), Hermes (Greek), Br'er Rabbit, Bugs Bunny" },
+      { id:"sidekick", name:"Sidekick", emoji:"🤜", common:false, nouns:["Companion","Partner","Second","Wingman","Ally"], core:"Loyalty, complementary support, and elevating the protagonist.", brandVoice:"Supportive, reliable, complementary, enabling.", brands:"Shopify (enabling entrepreneurs), Squarespace, Slack", color:"#2980B9", bg:"#EBF5FB", category:"Connection", description:"Sidekick brands don't claim to be the hero — they claim to make the hero possible. This is a powerful and underused brand position: the tool, partner, or platform that enables others to achieve what they couldn't alone.", tension:"Can be overshadowed or commoditised — the sidekick is only as valuable as the hero it enables.", storyHook:"The person who was always there, in the background, making the impossible thing possible.", mythology:"The Sidekick is Enkidu to Gilgamesh (2100 BC), Patroclus to Achilles, Sancho Panza to Don Quixote (Cervantes, 1605). In the 20th century: Watson to Holmes, Robin to Batman, Samwise to Frodo.", origin:"Gilgamesh Epic (Enkidu, c.2100 BC) / Don Quixote (Sancho Panza, 1605)", famousExamples:"Enkidu (Gilgamesh), Sancho Panza (Don Quixote), Watson (Sherlock Holmes), Samwise Gamgee (LOTR), Robin (Batman)" },
+      { id:"orphan", name:"Orphan", emoji:"🌑", common:false, nouns:["Outcast","Survivor","Drifter","Abandoned","Witness"], core:"Resilience, realism, and solidarity forged in hardship.", brandVoice:"Honest, gritty, unfiltered, empathetic.", brands:"Levi's (heritage), certain NGOs, Humans of New York", color:"#616A6B", bg:"#F2F3F4", category:"Knowledge", description:"The Orphan brand speaks to those who feel marginalized or overlooked. It earns trust by acknowledging struggle without sugarcoating. Powerful for brands that champion underdogs or social causes.", tension:"Can feel victimised or lacking in agency if not balanced with resilience and forward motion.", storyHook:"The one who doesn't fit — and eventually, that becomes their greatest strength.", mythology:"Moses in the bulrushes (Exodus), Romulus and Remus (founders of Rome, abandoned as infants), Oedipus. In literature: Oliver Twist (Dickens), Jane Eyre (Charlotte Brontë), Harry Potter.", origin:"Mark & Pearson (2001) / Moses narrative (Exodus) / Dickens tradition", famousExamples:"Moses (Exodus), Romulus & Remus (Roman myth), Oliver Twist (Dickens), Jane Eyre (Brontë), Harry Potter" },
+      { id:"shapeshifter", name:"Shapeshifter", emoji:"🌀", common:false, nouns:["Chameleon","Adapter","Transformer","Fluid","Enigmatic"], core:"Adaptability, ambiguity, and unknown loyalty — the figure who cannot be fixed.", brandVoice:"Fluid, context-sensitive, surprising, multi-faceted.", brands:"Madonna (as brand), Lady Gaga, Snapchat, certain luxury houses", color:"#7D3C98", bg:"#F5EEF8", category:"Expression", description:"The Shapeshifter is the archetype of unknown loyalty and endless transformation. This is a high-risk, high-reward archetype: audiences who value authenticity may distrust it, while others find the constant evolution magnetic.", tension:"Unknown loyalty is the defining tension — audiences may never know who you really are.", storyHook:"The character you thought you understood — until the final act.", mythology:"The Shapeshifter appears worldwide: Loki (Norse), Proteus (Greek, the 'Old Man of the Sea'), the Kitsune (Japanese fox spirit). In literature: Iago (Othello) is the dark Shapeshifter; Gatsby is the romantic one.", origin:"Proteus (Greek myth) / Jung's concept of the anima/animus as shapeshifter", famousExamples:"Proteus (Greek), Loki (Norse), Kitsune (Japanese folklore), Jay Gatsby (Fitzgerald), Iago (Othello)" },
+      { id:"villain", name:"Villain", emoji:"🖤", common:false, nouns:["Antagonist","Adversary","Dark Lord","Tyrant","Corruptor"], core:"Opposition, dark ambition, and the shadow that defines the hero.", brandVoice:"Menacing, seductive, absolute, chilling.", brands:"Used carefully in challenger brand positioning; Monster Energy, certain fashion houses", color:"#1C1C1C", bg:"#F2F3F4", category:"Power", description:"The Villain archetype is rarely a primary brand identity, but it is essential for understanding positioning — because the Villain defines what the Hero opposes. Identifying your brand's 'villain' is often the fastest route to compelling narrative.", tension:"Direct Villain positioning is almost always a liability — audiences don't buy from villains they dislike.", storyHook:"The antagonist who turns out to have the most coherent worldview of anyone in the story.", mythology:"The Villain/Shadow is the most important figure in Jungian psychology — the archetype that carries everything the ego refuses to acknowledge. In mythology: Set (Egyptian), Loki in his darkest aspect, Lucifer/Satan.", origin:"Carl Jung (Shadow archetype) / Aristotle's concept of the antagonist in Poetics", famousExamples:"Set (Egyptian myth), Iago (Othello), Heathcliff (Wuthering Heights), Darth Vader (Star Wars), Thanos (Marvel)" },
+      { id:"ally", name:"Ally", emoji:"🫂", common:false, nouns:["Partner","Supporter","Confederate","Fellow","Collaborator"], core:"Solidarity, mutual benefit, and standing with others for shared goals.", brandVoice:"Collaborative, affirming, generous, shoulder-to-shoulder.", brands:"Salesforce (partner ecosystem), GitHub, Slack, B Team brands", color:"#1E8449", bg:"#EAFAF1", category:"Connection", description:"The Ally archetype is defined by active solidarity — it shows up, stays, and shares risk. Unlike the Caregiver (who gives) or the Sidekick (who follows), the Ally stands alongside as an equal partner with shared stakes.", tension:"Can feel passive or non-committal if alliance doesn't involve real sacrifice or risk.", storyHook:"The one who wasn't asked to stay — but did anyway, because it was right.", mythology:"The Ally appears in the Trojan War through Achilles' relationship with Patroclus. The Fellowship of the Ring is entirely an Ally structure — a diverse group united by a shared purpose, not hierarchy.", origin:"Joseph Campbell's Hero's Journey — 'Allies and Enemies' function / Iliad (Patroclus)", famousExamples:"Patroclus (Iliad), The Fellowship of the Ring (LOTR), Jim (Huck Finn), Leslie Knope's friend group (Parks & Rec)" },
+      { id:"herald", name:"Herald", emoji:"📯", common:false, nouns:["Messenger","Announcer","Harbinger","Catalyst","Signal"], core:"Change is coming — the Herald announces what the world is not ready to hear.", brandVoice:"Urgent, clarifying, arresting, forward-looking.", brands:"TED, The Economist, Wired, Reuters", color:"#2471A3", bg:"#EBF5FB", category:"Knowledge", description:"The Herald is the archetype of announcement and catalyst. In story terms, the Herald delivers the call to adventure — the news that changes everything. In brand terms, the Herald signals what matters, what's changing, and why you need to pay attention now.", tension:"Herald brands that cry wolf or over-sensationalise lose their most valuable asset: the weight of announcement.", storyHook:"The message that arrived before anyone was ready — and changed everything anyway.", mythology:"Hermes/Mercury is the archetypal Herald — messenger of the gods. In the Bible: John the Baptist as Herald to Jesus. Joseph Campbell identifies the Herald as the figure that delivers the Call to Adventure.", origin:"Joseph Campbell — The Hero with a Thousand Faces (1949) / Hermes/Mercury mythology", famousExamples:"Hermes/Mercury (mythology), John the Baptist (Biblical), Odin's ravens (Norse), the White Rabbit (Alice in Wonderland)" },
+      { id:"mentor", name:"Mentor", emoji:"🎓", common:false, nouns:["Guide","Coach","Tutor","Wise Elder","Advisor"], core:"Guidance, growth, and unlocking potential in others.", brandVoice:"Supportive, knowledgeable, patient, empowering.", brands:"MasterClass, LinkedIn Learning, Headspace, McKinsey", color:"#1F618D", bg:"#EBF5FB", category:"Knowledge", description:"The Mentor brand is invested in your progress. It positions itself as a trusted guide on your journey — not above you, but beside you. Ideal for education, coaching, software tools, and professional development.", tension:"Can feel paternalistic if it assumes the audience needs fixing.", storyHook:"The teacher who sees what you could become before you believe it yourself.", mythology:"The archetype takes its name directly from Homer's Odyssey: Mentor was the trusted advisor left to guide Odysseus' son Telemachus. Athena frequently appeared in Mentor's form. In literature: Dumbledore, Gandalf, Mr Miyagi, Morpheus.", origin:"Homer's Odyssey (c.800 BC) — Mentor character / Campbell's 'Supernatural Aid'", famousExamples:"Mentor (Odyssey), Gandalf (LOTR), Dumbledore (Harry Potter), Mr Miyagi (Karate Kid), Morpheus (The Matrix), Yoda" },
+      { id:"wanderer", name:"Wanderer", emoji:"🌄", common:false, nouns:["Drifter","Nomad","Pilgrim","Rover","Itinerant"], core:"The search for meaning through motion — belonging nowhere, open to everywhere.", brandVoice:"Philosophical, unattached, observational, poetic.", brands:"Airstream, Patagonia (wanderer aspect), World Nomads, Lonely Planet", color:"#7E5109", bg:"#FDF0E5", category:"Freedom", description:"The Wanderer differs from the Explorer in that the Explorer seeks discovery, while the Wanderer seeks meaning through the act of moving itself. The Wanderer is never quite at home — and has made peace with that.", tension:"Can feel disconnected or uncommitted — the Wanderer risks appearing unable to commit to community.", storyHook:"The traveller who realises the destination was never the point.", mythology:"The Wanderer is Cain after Eden (condemned to wander), Odysseus on the wine-dark sea, the Flying Dutchman. In literature: Wordsworth's Prelude, Goethe's Wilhelm Meister, Kerouac's Sal Paradise (On the Road), Hesse's Siddhartha.", origin:"Homer's Odyssey / German Romantic tradition (Caspar David Friedrich, 1818)", famousExamples:"Odysseus (Homer), Cain (Genesis), Siddhārtha Gautama, Sal Paradise (On the Road), The Little Prince (Saint-Exupéry)" },
+    ];
+
+    const CATEGORIES = ["All","Power","Freedom","Expression","Connection","Knowledge"];
+    const SORT_OPTIONS = ["A–Z","Z–A","Category","Common First"];
+
+    const INTERACTION_MAP = {
+      "hero+explorer":{ title:"Courageous Discovery", summary:"Wins through bold action and pursuit of the unknown. Powerful for brands that compete through frontier-pushing innovation.", tension:"Balancing achievement with openness — not every goal needs a finish line.", example:"Red Bull, National Geographic Adventure" },
+      "hero+creator":{ title:"Masterful Making", summary:"Excellence and craft combined. A brand that produces exceptional quality through disciplined skill and vision.", tension:"Ego can surface — the work must speak louder than the maker.", example:"Nike x Off-White, Leica" },
+      "hero+sage":{ title:"Informed Excellence", summary:"A brand that wins by being both the best and the most knowledgeable. Authority through performance and intelligence.", tension:"Can feel inaccessible if expertise becomes a barrier to entry.", example:"IBM, McKinsey" },
+      "hero+warrior":{ title:"Sacred Combat", summary:"The most intensely disciplined brand position — driven by both achievement and duty.", tension:"Can feel punishing or exclusionary to those outside its code.", example:"Spartan Race, Under Armour" },
+      "hero+mentor":{ title:"Empowered Mastery", summary:"A brand that doesn't just win — it teaches others to win. The coach who is also the champion.", tension:"Must balance personal excellence with genuine investment in others.", example:"Nike Training Club, MasterClass Sport" },
+      "outlaw+rebel":{ title:"Principled Disruption", summary:"The most powerful challenger brand combination — breaks rules AND has moral conviction for doing so.", tension:"Must be clear whether the rule-breaking serves self or others.", example:"Patagonia vs. Harley-Davidson" },
+      "outlaw+trickster":{ title:"Subversive Chaos", summary:"The brand that disrupts through deception and comedy — unsettling the status quo with misdirection.", tension:"Can seem manipulative rather than liberating.", example:"Dollar Shave Club, early Red Bull" },
+      "magician+shapeshifter":{ title:"Infinite Transformation", summary:"A brand that doesn't just transform you — it never stops transforming itself. Maximum mystery, maximum possibility.", tension:"Trust requires some consistency — too much change and audiences disengage.", example:"Madonna, Lady Gaga, Alexander McQueen" },
+      "lover+artist":{ title:"Sensual Expression", summary:"Beauty made to be felt, not explained. The brand that creates desire through pure aesthetic experience.", tension:"Can feel self-indulgent or exclusive to audiences who prioritise function.", example:"Chanel No.5, Montblanc, Moleskine" },
+      "lover+caregiver":{ title:"Devoted Care", summary:"Love expressed through service. A brand that makes you feel truly seen and tended to — not just satisfied.", tension:"Can blur the line between intimacy and dependency.", example:"Lush, The Body Shop, bespoke hospitality brands" },
+      "jester+trickster":{ title:"Carnivalesque Subversion", summary:"Pure comedic chaos with an edge. A brand that makes you laugh while pulling the rug from under your assumptions.", tension:"Audiences must trust the intent behind the chaos or they feel targeted.", example:"Cards Against Humanity, Monty Python as brand" },
+      "jester+rebel":{ title:"Satirical Defiance", summary:"Uses laughter as a weapon of dissent. Challenges the status quo through mockery rather than confrontation.", tension:"Satire that punches down rather than up loses the audience.", example:"South Park brand positioning, The Daily Show" },
+      "everyman+caregiver":{ title:"Community Heart", summary:"The brand that serves everyone, warmly. No hierarchy, no pretension — just genuine care at scale.", tension:"Can feel generic without a specific community or cause to anchor it.", example:"IKEA, John Lewis, Costco" },
+      "everyman+ally":{ title:"Shoulder to Shoulder", summary:"A brand that stands with its audience as equals and co-conspirators in everyday life.", tension:"Must avoid appearing to exploit solidarity for commercial gain.", example:"Guinness community campaigns, Budweiser heritage ads" },
+      "creator+artist":{ title:"Expressive Making", summary:"The brand that makes things both beautiful and personal. Craft and emotion in perfect tension.", tension:"Commercial success can feel like a betrayal of artistic integrity.", example:"Fender, Moleskine, Lego Ideas" },
+      "sage+mentor":{ title:"Trusted Wisdom", summary:"A brand that shares what it knows to make others better. Deep expertise delivered with genuine care for the learner.", tension:"Must avoid condescension — wisdom is only useful when received.", example:"MasterClass, Khan Academy" },
+      "sage+herald":{ title:"Authoritative Signal", summary:"The trusted voice that tells you what matters and why. Combines credibility with urgency.", tension:"Herald brands that sensationalise lose the Sage's credibility.", example:"The Economist, TED" },
+      "warrior+guardian":{ title:"Honourable Defence", summary:"Fights with discipline and protects with loyalty. The brand of duty twice over.", tension:"Can feel rigid or unable to adapt to changing threats.", example:"Spartan Race + insurance hybrid positioning" },
+      "orphan+ally":{ title:"Solidarity of Survivors", summary:"The brand that emerges from hardship and stands with others in theirs. Radical honesty and mutual support.", tension:"Can become a closed community that resists new members.", example:"Humans of New York, certain NGOs" },
+      "shapeshifter+trickster":{ title:"Perpetual Mystery", summary:"A brand that can never be fully known — and doesn't want to be. The brand of infinite reinvention and surprise.", tension:"Requires an extremely loyal core audience who enjoy the instability.", example:"Lady Gaga, Alexander McQueen" },
+      "herald+mentor":{ title:"The Signal of What's Coming", summary:"A brand that announces the future before it arrives. The most powerful position in thought leadership.", tension:"A single wrong prediction can undermine years of credibility.", example:"Wired, MIT Technology Review" },
+      "mentor+sidekick":{ title:"The Enabling Guide", summary:"Not just enabling — actively guiding and developing. The platform that makes you better while you use it.", tension:"Must empower, not create dependency on the mentor relationship.", example:"LinkedIn Learning, Duolingo" },
+      "wanderer+explorer":{ title:"The Journey as Home", summary:"A brand that makes motion itself the destination. Celebrates the life of perpetual seeking.", tension:"Can feel rootless — audiences who want to belong may not connect.", example:"Airstream, World Nomads" },
+      "villain+outlaw":{ title:"The Dark Challenger", summary:"The brand that doesn't pretend to be good — it just claims to be honest about the game. Maximum provocation.", tension:"A tiny market segment actively wants this. Most audiences don't.", example:"Certain edgy fashion brands, niche provocateurs" },
+      "rebel+reformer":{ title:"Principled Activism", summary:"A brand that fights for the world, not just the market. Moral conviction backed by genuine action.", tension:"Must match words with action — attracts intense scrutiny.", example:"Patagonia, Ben & Jerry's" },
+    };
+
+    function getInteraction(a, b) {
+      if (!a || !b) return null;
+      return INTERACTION_MAP[`${a.id}+${b.id}`] || INTERACTION_MAP[`${b.id}+${a.id}`] || null;
+    }
+
+    function generateSummary(primary, secondary, weight) {
+      if (!primary) return "";
+      const secW = 100 - weight;
+      if (!secondary || secW === 0) {
+        return `PRIMARY ARCHETYPE: ${primary.name.toUpperCase()} (100%)\n\nCore Drive: ${primary.core}\n\nBrand Voice: ${primary.brandVoice}\n\nDescription:\n${primary.description}\n\nStorytelling Hook:\n"${primary.storyHook}"\n\nBrand Tension:\n${primary.tension}\n\nReference Brands: ${primary.brands}\n\nMythological Origin:\n${primary.mythology}`;
+      }
+      const interaction = getInteraction(primary, secondary);
+      const intNote = interaction ? `\n\nARCHETYPE INTERACTION — ${interaction.title}:\n${interaction.summary}\n\nInteraction Tension: ${interaction.tension}\nReference: ${interaction.example}` : "";
+      return `PRIMARY: ${primary.name.toUpperCase()} (${weight}%) + SECONDARY: ${secondary.name.toUpperCase()} (${secW}%)\n\nCombined Drive:\n${primary.core} — layered with — ${secondary.core}\n\nPrimary Voice: ${primary.brandVoice}\nSecondary Voice: ${secondary.brandVoice}\n\nBrand Description:\nA ${weight >= 70 ? "strongly " : ""}${primary.name}-led brand with ${secondary.name} dimension. ${primary.description.split(".")[0]}. Inflected by ${secondary.description.split(".")[0].toLowerCase()}.\n\nStorytelling Hooks:\nPrimary — "${primary.storyHook}"\nSecondary — "${secondary.storyHook}"${intNote}\n\nTensions to manage:\n— ${primary.tension}\n— ${secondary.tension}\n\nReference Brands:\n${primary.brands.split(",")[0].trim()} meets ${secondary.brands.split(",")[0].trim()}`;
+    }
+
+    const CAT_COLORS = {"Power":"#C0392B","Freedom":"#117A65","Expression":"#6C3483","Connection":"#1F618D","Knowledge":"#7D6608"};
+    const CAT_ICONS = {"Power":"⚡","Freedom":"🌿","Expression":"🎭","Connection":"🫶","Knowledge":"🔭"};
+
+    const css = `
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body { background: #F7F5F0; font-family: 'DM Sans', sans-serif; color: #1A1A18; }
+
+      /* ── Layout ── */
+      .app { min-height: 100vh; display: flex; flex-direction: column; }
+
+      /* ── Topbar ── */
+      .topbar {
+        background: #18181A;
+        padding: 0 32px;
+        height: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        gap: 16px;
+        flex-shrink: 0;
+      }
+      .topbar-left { display: flex; align-items: center; gap: 12px; }
+      .logo {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.15rem;
+        color: #F7F5F0;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+      .logo-badge {
+        font-size: 0.6rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #555;
+        background: #222;
+        padding: 3px 8px;
+        border-radius: 2px;
+        white-space: nowrap;
+      }
+      .topbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+      .selection-pill {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #242424;
+        border: 1px solid #333;
+        padding: 5px 10px;
+        font-size: 0.7rem;
+        color: #888;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .selection-pill strong { color: var(--c, #F7F5F0); font-weight: 600; }
+      .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c, #F7F5F0); flex-shrink: 0; }
+      .reset-btn {
+        background: none;
+        border: 1px solid #333;
+        color: #666;
+        padding: 6px 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.18s;
+        white-space: nowrap;
+      }
+      .reset-btn:hover { border-color: #C0392B; color: #C0392B; }
+
+      /* ── Tab nav ── */
+      .tab-nav {
+        background: #F7F5F0;
+        border-bottom: 1px solid #E3DDD5;
+        padding: 0 32px;
+        display: flex;
+        gap: 0;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .tab-btn {
+        padding: 14px 20px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #9A9387;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        white-space: nowrap;
+        transition: all 0.15s;
+        letter-spacing: 0.01em;
+      }
+      .tab-btn:hover { color: #1A1A18; }
+      .tab-btn.active { color: #1A1A18; border-bottom-color: #1A1A18; }
+      .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #1A1A18;
+        color: #F7F5F0;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 0.6rem;
+        margin-left: 6px;
+        font-weight: 600;
+      }
+
+      /* ── Controls bar ── */
+      .controls-bar {
+        background: #EDE9E1;
+        border-bottom: 1px solid #D8D2C8;
+        padding: 12px 32px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
+      .search-icon {
+        position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+        color: #9A9387; font-size: 0.85rem; pointer-events: none; line-height: 1;
+      }
+      .search-input {
+        width: 100%;
+        background: #fff;
+        border: 1px solid #D3CEC5;
+        border-radius: 6px;
+        padding: 8px 10px 8px 32px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.78rem;
+        color: #1A1A18;
+        outline: none;
+        transition: border 0.2s;
+      }
+      .search-input:focus { border-color: #1A1A18; }
+      .search-input::placeholder { color: #B5AFA7; }
+      .ctrl-sep { width: 1px; height: 22px; background: #CCC8BF; flex-shrink: 0; }
+      .filter-group { display: flex; align-items: center; gap: 6px; }
+      .filter-label { font-size: 0.68rem; color: #9A9387; white-space: nowrap; font-weight: 500; }
+      .filter-btn {
+        padding: 6px 11px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        border: 1px solid #D3CEC5;
+        background: #fff;
+        color: #7A756D;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .filter-btn:hover { border-color: #888; color: #333; }
+      .filter-btn.active { background: #1A1A18; color: #F7F5F0; border-color: #1A1A18; }
+      .filter-btn.gold-active { background: #8C6D1F; color: #fff; border-color: #8C6D1F; }
+      .filter-btn.gray-active { background: #5D6D7E; color: #fff; border-color: #5D6D7E; }
+      .sort-select {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem;
+        border: 1px solid #D3CEC5;
+        background: #fff;
+        color: #555;
+        padding: 6px 10px;
+        border-radius: 5px;
+        outline: none;
+        cursor: pointer;
+      }
+      .count-pill {
+        font-size: 0.68rem;
+        color: #9A9387;
+        background: #fff;
+        border: 1px solid #D3CEC5;
+        padding: 5px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
+        font-weight: 500;
+      }
+
+      /* ── Category dropdown ── */
+      .cat-dropdown { position: relative; }
+      .cat-trigger {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 11px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 500;
+        border: 1px solid #D3CEC5;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .cat-trigger:hover, .cat-trigger.open { border-color: #1A1A18; color: #1A1A18; }
+      .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+      .cat-arrow { font-size: 0.55rem; transition: transform 0.2s; color: #9A9387; }
+      .cat-arrow.open { transform: rotate(180deg); }
+      .cat-menu {
+        position: absolute;
+        top: calc(100% + 5px);
+        left: 0;
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        z-index: 300;
+        min-width: 170px;
+        padding: 5px;
+        overflow: hidden;
+      }
+      .cat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.75rem;
+        cursor: pointer;
+        color: #555;
+        border-radius: 5px;
+        transition: background 0.1s;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-weight: 500;
+      }
+      .cat-item:hover { background: #F7F5F0; }
+      .cat-item.active { color: #1A1A18; background: #F0EDE7; }
+      .cat-item-icon { font-size: 0.85rem; }
+
+      /* ── Main layout ── */
+      .main-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        flex: 1;
+        min-height: 0;
+      }
+      .grid-pane {
+        padding: 24px 28px;
+        overflow-y: auto;
+      }
+      .grid-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .grid-meta-text { font-size: 0.72rem; color: #9A9387; }
+      .grid-meta-hint { font-size: 0.68rem; color: #B5AFA7; }
+      .arch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 10px;
+      }
+
+      /* ── Archetype card ── */
+      .arch-card {
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 10px;
+        padding: 16px;
+        cursor: pointer;
+        transition: all 0.18s;
+        position: relative;
+        overflow: hidden;
+      }
+      .arch-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--cc, transparent);
+        opacity: 0;
+        transition: opacity 0.18s;
+      }
+      .arch-card:hover {
+        border-color: #C9C3B8;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+        transform: translateY(-1px);
+      }
+      .arch-card:hover::before { opacity: 1; }
+      .arch-card.is-primary {
+        border-color: var(--cc) !important;
+        box-shadow: 0 0 0 1px var(--cc), 0 4px 16px rgba(0,0,0,0.1) !important;
+      }
+      .arch-card.is-primary::before { opacity: 1; height: 4px; }
+      .arch-card.is-secondary {
+        border-color: var(--cc) !important;
+        border-style: dashed !important;
+      }
+      .arch-card.is-secondary::before { opacity: 1; }
+      .arch-card.is-compare {
+        outline: 2px solid #1A1A18;
+        outline-offset: 2px;
+      }
+      .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+      .card-emoji { font-size: 1.5rem; line-height: 1; }
+      .card-badges { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+      .badge {
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 3px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .badge-primary { background: var(--cc); color: #fff; }
+      .badge-secondary { border: 1.5px solid var(--cc); color: var(--cc); background: transparent; }
+      .badge-compare { background: #1A1A18; color: #F7F5F0; }
+      .badge-core { background: #F7F0DC; color: #8C6D1F; border: 1px solid #E8D68A; }
+      .card-name {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.05rem;
+        color: #1A1A18;
+        margin-bottom: 2px;
+        line-height: 1.2;
+      }
+      .card-cat {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .card-nouns { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+      .noun-tag {
+        font-size: 0.62rem;
+        color: #9A9387;
+        padding: 2px 7px;
+        border: 1px solid #ECEAE4;
+        border-radius: 3px;
+        background: #FAFAF8;
+      }
+      .card-core { font-size: 0.72rem; color: #7A756D; line-height: 1.6; font-style: italic; }
+
+      /* ── Expanded card content ── */
+      .card-expand {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #F0EDE7;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+      .expand-tabs { display: flex; gap: 4px; margin-bottom: 14px; }
+      .expand-tab {
+        font-size: 0.68rem;
+        font-weight: 500;
+        padding: 5px 12px;
+        border: 1px solid #E3DDD5;
+        background: #F7F5F0;
+        cursor: pointer;
+        color: #9A9387;
+        font-family: 'DM Sans', sans-serif;
+        border-radius: 4px;
+        transition: all 0.15s;
+      }
+      .expand-tab.active { background: #1A1A18; color: #F7F5F0; border-color: #1A1A18; }
+      .expand-desc { font-size: 0.73rem; color: #555; line-height: 1.75; margin-bottom: 12px; }
+      .expand-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+      .expand-lbl {
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #C0BAB0;
+        min-width: 62px;
+        flex-shrink: 0;
+        padding-top: 1px;
+      }
+      .expand-val { font-size: 0.72rem; color: #666; line-height: 1.6; }
+      .expand-tension { font-size: 0.72rem; color: #B03A2E; font-style: italic; line-height: 1.6; }
+      .brand-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+      .brand-tag {
+        font-size: 0.63rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: var(--cc-light, #F7F5F0);
+        color: var(--cc, #555);
+        border: 1px solid;
+        border-color: color-mix(in srgb, var(--cc, #999) 30%, transparent);
+        font-weight: 500;
+      }
+      .myth-origin {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #9A9387;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+      .myth-body { font-size: 0.72rem; color: #666; line-height: 1.78; margin-bottom: 12px; }
+      .myth-examples { font-size: 0.72rem; color: #888; line-height: 1.6; }
+      .card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+      .action-btn {
+        font-size: 0.68rem;
+        font-weight: 500;
+        padding: 7px 13px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.15s;
+        border: 1px solid;
+        white-space: nowrap;
+      }
+      .action-btn.set-p {
+        background: var(--cc);
+        color: #fff;
+        border-color: var(--cc);
+      }
+      .action-btn.set-p:hover { opacity: 0.85; }
+      .action-btn.set-s {
+        background: transparent;
+        color: var(--cc);
+        border-color: var(--cc);
+      }
+      .action-btn.set-s:hover { background: var(--cc-light, #F7F5F0); }
+      .action-btn.remove {
+        background: #fff;
+        color: #9A9387;
+        border-color: #E3DDD5;
+      }
+      .action-btn.remove:hover { border-color: #C0392B; color: #C0392B; }
+      .action-btn.compare {
+        background: #F7F5F0;
+        color: #555;
+        border-color: #E3DDD5;
+      }
+      .action-btn.compare:hover { border-color: #1A1A18; color: #1A1A18; }
+      .action-btn.compare.in-compare { background: #1A1A18; color: #F7F5F0; border-color: #1A1A18; }
+
+      /* ── Sidebar ── */
+      .sidebar {
+        border-left: 1px solid #E3DDD5;
+        background: #FDFCF9;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        overflow-y: auto;
+      }
+      .sidebar-section {
+        padding: 20px 20px;
+        border-bottom: 1px solid #EDE9E1;
+      }
+      .sidebar-section:last-child { border-bottom: none; }
+      .sidebar-label {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #B5AFA7;
+        margin-bottom: 12px;
+      }
+      .selected-card {
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 8px;
+        padding: 14px;
+        position: relative;
+        border-left: 3px solid var(--cc, #E3DDD5);
+      }
+      .selected-card.secondary { border-style: dashed; border-left-style: dashed; }
+      .selected-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+      .sel-emoji { font-size: 1.4rem; }
+      .sel-name { font-family: 'DM Serif Display', serif; font-size: 0.95rem; color: #1A1A18; }
+      .sel-weight { font-size: 0.65rem; color: var(--cc, #9A9387); font-weight: 600; }
+      .sel-core { font-size: 0.68rem; color: #9A9387; line-height: 1.6; font-style: italic; }
+      .remove-x {
+        position: absolute; top: 10px; right: 10px;
+        background: none; border: none;
+        color: #C0BAB0; cursor: pointer; font-size: 0.75rem;
+        line-height: 1; padding: 2px;
+        border-radius: 3px; transition: color 0.15s;
+      }
+      .remove-x:hover { color: #C0392B; }
+      .empty-slot {
+        background: #F0EDE7;
+        border: 1.5px dashed #D3CEC5;
+        border-radius: 8px;
+        padding: 16px;
+        font-size: 0.7rem;
+        color: #B5AFA7;
+        line-height: 1.6;
+        text-align: center;
+      }
+      .empty-slot span { display: block; font-size: 1.3rem; margin-bottom: 6px; }
+
+      /* ── Blend ratio ── */
+      .ratio-bar {
+        display: flex;
+        height: 6px;
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        background: #E3DDD5;
+      }
+      .ratio-bar-primary { border-radius: 3px 0 0 3px; transition: width 0.3s; }
+      .ratio-bar-secondary { border-radius: 0 3px 3px 0; flex: 1; transition: all 0.3s; }
+      .ratio-names { display: flex; justify-content: space-between; margin-bottom: 10px; }
+      .ratio-name { font-family: 'DM Serif Display', serif; font-size: 0.75rem; font-style: italic; }
+      .blend-slider {
+        width: 100%;
+        -webkit-appearance: none;
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(to right, var(--pc, #1A1A18) var(--pct, 67%), #E3DDD5 var(--pct, 67%));
+        outline: none;
+        cursor: pointer;
+        margin-bottom: 8px;
+      }
+      .blend-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        background: var(--pc, #1A1A18);
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        transition: transform 0.15s;
+      }
+      .blend-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+      .blend-pcts { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 600; margin-bottom: 10px; }
+      .preset-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+      .preset-btn {
+        font-size: 0.65rem;
+        padding: 5px 9px;
+        border: 1px solid #D3CEC5;
+        background: #fff;
+        color: #9A9387;
+        cursor: pointer;
+        border-radius: 4px;
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 500;
+        transition: all 0.15s;
+      }
+      .preset-btn:hover, .preset-btn.active { border-color: #1A1A18; color: #1A1A18; background: #F7F5F0; }
+
+      /* ── Interaction box ── */
+      .interaction-box {
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 8px;
+        border-left: 3px solid #1A1A18;
+        padding: 14px;
+      }
+      .int-title { font-family: 'DM Serif Display', serif; font-size: 1rem; margin-bottom: 6px; }
+      .int-body { font-size: 0.71rem; color: #666; line-height: 1.72; margin-bottom: 8px; }
+      .int-tension { font-size: 0.68rem; color: #B03A2E; font-style: italic; margin-bottom: 6px; line-height: 1.5; }
+      .int-eg { font-size: 0.66rem; color: #B5AFA7; }
+
+      /* ── Summary box ── */
+      .summary-box {
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 8px;
+        border-left: 3px solid var(--pc, #1A1A18);
+        padding: 16px;
+        margin-bottom: 10px;
+      }
+      .summary-text {
+        font-family: 'DM Serif Display', serif;
+        font-size: 0.78rem;
+        color: #555;
+        line-height: 1.95;
+        white-space: pre-line;
+        font-style: italic;
+      }
+      .copy-btn {
+        width: 100%;
+        padding: 11px;
+        background: #1A1A18;
+        color: #F7F5F0;
+        border: none;
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .copy-btn:hover { background: #333; }
+      .copy-btn.done { background: #1E8449; }
+      .no-summary { font-size: 0.72rem; color: #B5AFA7; line-height: 1.7; }
+
+      /* ── Compare tab ── */
+      .compare-pane { padding: 28px 32px; }
+      .compare-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+      .compare-title { font-family: 'DM Serif Display', serif; font-size: 1.8rem; color: #1A1A18; }
+      .compare-sub { font-size: 0.75rem; color: #9A9387; margin-top: 4px; line-height: 1.5; }
+      .compare-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 32px; }
+      .compare-card {
+        background: #fff;
+        border: 1px solid #E3DDD5;
+        border-radius: 10px;
+        border-top: 4px solid var(--cc, #E3DDD5);
+        padding: 18px;
+        position: relative;
+      }
+      .compare-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+      .compare-emoji { font-size: 1.9rem; }
+      .compare-rm {
+        background: #F7F5F0; border: 1px solid #E3DDD5; color: #9A9387;
+        padding: 5px 10px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+        font-size: 0.65rem; font-weight: 500; border-radius: 4px; transition: all 0.15s;
+      }
+      .compare-rm:hover { border-color: #C0392B; color: #C0392B; background: #FDF0EE; }
+      .compare-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; margin-bottom: 2px; }
+      .compare-cat { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+      .compare-section { margin-bottom: 12px; }
+      .compare-sec-lbl {
+        font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: #C0BAB0; margin-bottom: 5px;
+      }
+      .compare-text { font-size: 0.71rem; color: #666; line-height: 1.65; }
+      .compare-tension { font-size: 0.68rem; color: #B03A2E; font-style: italic; line-height: 1.55; }
+      .compare-hook { font-size: 0.71rem; color: #555; font-style: italic; line-height: 1.65; }
+      .compare-nouns { display: flex; flex-wrap: wrap; gap: 4px; }
+      .compare-noun { font-size: 0.62rem; padding: 2px 7px; border: 1px solid #ECEAE4; color: #9A9387; border-radius: 3px; }
+      .compare-placeholder {
+        background: #F0EDE7; border: 2px dashed #D3CEC5;
+        border-radius: 10px; display: flex; align-items: center;
+        justify-content: center; font-size: 0.68rem; color: #B5AFA7;
+        min-height: 200px; text-align: center; padding: 20px; line-height: 1.8;
+      }
+      .interactions-header {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+        color: #9A9387; padding-bottom: 14px; border-bottom: 1px solid #E3DDD5; margin-bottom: 18px;
+      }
+      .interactions-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+      .int-card {
+        background: #fff; border: 1px solid #E3DDD5; border-radius: 8px;
+        border-top: 3px solid var(--cc, #E3DDD5); padding: 16px;
+      }
+      .int-pair { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9A9387; margin-bottom: 6px; }
+      .empty-compare { text-align: center; padding: 60px 20px; color: #B5AFA7; font-size: 0.75rem; line-height: 2.2; }
+
+      /* ── Guide tab ── */
+      .guide-pane { background: #18181A; color: #F7F5F0; padding: 56px 32px; }
+      .guide-inner { max-width: 900px; margin: 0 auto; }
+      .guide-title { font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1.15; margin-bottom: 8px; }
+      .guide-sub { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #555; margin-bottom: 48px; }
+      .guide-blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-bottom: 48px; }
+      .guide-block { border-top: 1px solid #2A2A2A; padding-top: 20px; }
+      .guide-num { font-size: 0.6rem; letter-spacing: 0.2em; color: #444; margin-bottom: 8px; font-weight: 600; }
+      .guide-block-title { font-family: 'DM Serif Display', serif; font-size: 1.05rem; margin-bottom: 10px; line-height: 1.3; }
+      .guide-block-body { font-size: 0.73rem; color: #888; line-height: 1.85; }
+      .story-section { border-top: 1px solid #2A2A2A; padding-top: 28px; margin-bottom: 40px; }
+      .story-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 14px; }
+      .story-body { font-size: 0.73rem; color: #777; line-height: 1.9; margin-bottom: 24px; }
+      .stages { display: grid; grid-template-columns: repeat(5,1fr); gap: 2px; margin: 0 0 8px; }
+      .stage { background: #1E1E20; padding: 16px 14px; border-radius: 4px; }
+      .stage-num { font-size: 0.58rem; letter-spacing: 0.15em; color: #444; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+      .stage-name { font-family: 'DM Serif Display', serif; font-size: 0.85rem; margin-bottom: 8px; line-height: 1.3; }
+      .stage-body { font-size: 0.65rem; color: #777; line-height: 1.65; }
+      .channels-section { border-top: 1px solid #2A2A2A; padding-top: 28px; }
+      .channels-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 20px; }
+      .channels-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+      .channel-card { background: #1E1E20; padding: 18px; border-radius: 6px; }
+      .channel-title { font-family: 'DM Serif Display', serif; font-size: 0.95rem; margin-bottom: 8px; }
+      .channel-body { font-size: 0.68rem; color: #888; line-height: 1.75; margin-bottom: 8px; }
+      .channel-eg { font-size: 0.65rem; color: #555; font-style: italic; line-height: 1.6; }
+
+      /* ── Compare actions in sidebar ── */
+      .compare-actions { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+
+      /* ── Responsive ── */
+      @media (max-width: 960px) {
+        .main-layout { grid-template-columns: 1fr; }
+        .sidebar { border-left: none; border-top: 1px solid #E3DDD5; }
+        .guide-blocks { grid-template-columns: 1fr; }
+        .channels-grid { grid-template-columns: 1fr; }
+        .stages { grid-template-columns: 1fr; }
+        .topbar, .tab-nav, .controls-bar, .grid-pane, .compare-pane, .guide-pane { padding-left: 16px; padding-right: 16px; }
+        .topbar-right .selection-pill { display: none; }
+      }
+      @media (max-width: 640px) {
+        .logo-badge { display: none; }
+        .arch-grid { grid-template-columns: 1fr 1fr; }
+        .compare-grid { grid-template-columns: 1fr; }
+        .interactions-grid { grid-template-columns: 1fr; }
+      }
+    `;
+
+    function App() {
+      const [search, setSearch] = useState("");
+      const [selectedCat, setSelectedCat] = useState("All");
+      const [commonFilter, setCommonFilter] = useState("All");
+      const [sortBy, setSortBy] = useState("A–Z");
+      const [primaryId, setPrimaryId] = useState(null);
+      const [secondaryId, setSecondaryId] = useState(null);
+      const [compareIds, setCompareIds] = useState([]);
+      const [weight, setWeight] = useState(80);
+      const [expandedId, setExpandedId] = useState(null);
+      const [expandedSection, setExpandedSection] = useState("desc");
+      const [activeTab, setActiveTab] = useState("selector");
+      const [copied, setCopied] = useState(false);
+      const [catMenuOpen, setCatMenuOpen] = useState(false);
+
+      const primary = ARCHETYPES.find(a => a.id === primaryId);
+      const secondary = ARCHETYPES.find(a => a.id === secondaryId);
+      const interaction = getInteraction(primary, secondary);
+      const summaryText = generateSummary(primary, secondary, weight);
+
+      function handleReset() {
+        setPrimaryId(null); setSecondaryId(null); setCompareIds([]);
+        setWeight(80); setExpandedId(null); setSearch("");
+        setSelectedCat("All"); setCommonFilter("All"); setSortBy("A–Z");
+        setCatMenuOpen(false);
+      }
+
+      const filtered = useMemo(() => {
+        let list = ARCHETYPES.filter(a => {
+          const catOk = selectedCat === "All" || a.category === selectedCat;
+          const commonOk = commonFilter === "All" || (commonFilter === "Most Common" && a.common) || (commonFilter === "Extended" && !a.common);
+          const searchOk = !search || [a.name, ...a.nouns, a.core, a.category, a.brands].some(s => s.toLowerCase().includes(search.toLowerCase()));
+          return catOk && commonOk && searchOk;
+        });
+        if (sortBy === "A–Z") list.sort((a,b) => a.name.localeCompare(b.name));
+        else if (sortBy === "Z–A") list.sort((a,b) => b.name.localeCompare(a.name));
+        else if (sortBy === "Category") list.sort((a,b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+        else if (sortBy === "Common First") list.sort((a,b) => (b.common?1:0)-(a.common?1:0) || a.name.localeCompare(b.name));
+        return list;
+      }, [selectedCat, commonFilter, sortBy, search]);
+
+      const compareArchetypes = compareIds.map(id => ARCHETYPES.find(a => a.id === id)).filter(Boolean);
+
+      function toggleCompare(id) {
+        setCompareIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : prev.length < 4 ? [...prev, id] : prev);
+      }
+
+      function handleCopy() {
+        const header = `BRAND ARCHETYPE POSITIONING BRIEF\n${"═".repeat(40)}\n\n`;
+        navigator.clipboard.writeText(header + summaryText + "\n\n— Generated with Brand Archetype Index").then(() => {
+          setCopied(true); setTimeout(() => setCopied(false), 2800);
+        });
+      }
+
+      return (
+        <>
+          <style>{css}</style>
+          <div className="app" onClick={() => catMenuOpen && setCatMenuOpen(false)}>
+
+            {/* ── Topbar ── */}
+            <header className="topbar">
+              <div className="topbar-left">
+                <div className="logo">Brand Archetype Index</div>
+                <span className="logo-badge">{ARCHETYPES.length} archetypes</span>
+              </div>
+              <div className="topbar-right">
+                {primary && (
+                  <div className="selection-pill" style={{"--c": primary.color}}>
+                    <span className="pill-dot"/>
+                    Primary: <strong>{primary.name}</strong> {weight}%
+                  </div>
+                )}
+                {secondary && (
+                  <div className="selection-pill" style={{"--c": secondary.color}}>
+                    <span className="pill-dot"/>
+                    Secondary: <strong>{secondary.name}</strong> {100-weight}%
+                  </div>
+                )}
+                {(primary || secondary || compareIds.length > 0) && (
+                  <button className="reset-btn" onClick={handleReset}>↺ Reset</button>
+                )}
+              </div>
+            </header>
+
+            {/* ── Tab nav ── */}
+            <nav className="tab-nav">
+              {[
+                ["selector", "Selector"],
+                ["compare", `Compare${compareIds.length > 0 ? "" : ""}`],
+                ["guide", "Storytelling Guide"]
+              ].map(([id, label]) => (
+                <button key={id} className={`tab-btn ${activeTab === id ? "active" : ""}`} onClick={() => setActiveTab(id)}>
+                  {label}
+                  {id === "compare" && compareIds.length > 0 && <span className="tab-badge">{compareIds.length}</span>}
+                </button>
+              ))}
+            </nav>
+
+            {/* ══════════════ SELECTOR TAB ══════════════ */}
+            {activeTab === "selector" && (<>
+              {/* Controls */}
+              <div className="controls-bar" onClick={e => e.stopPropagation()}>
+                <div className="search-wrap">
+                  <span className="search-icon">⌕</span>
+                  <input className="search-input" placeholder="Search name, trait, brand…" value={search} onChange={e => setSearch(e.target.value)} />
+                </div>
+                <span className="ctrl-sep"/>
+                <div className="filter-group">
+                  <span className="filter-label">Category</span>
+                  <div className="cat-dropdown">
+                    <button className={`cat-trigger ${catMenuOpen ? "open" : ""}`} onClick={e => { e.stopPropagation(); setCatMenuOpen(o => !o); }}>
+                      {selectedCat !== "All" && <span className="cat-dot" style={{background: CAT_COLORS[selectedCat]}}/>}
+                      {selectedCat === "All" ? "All categories" : selectedCat}
+                      <span className={`cat-arrow ${catMenuOpen ? "open" : ""}`}>▼</span>
+                    </button>
+                    {catMenuOpen && (
+                      <div className="cat-menu">
+                        {CATEGORIES.map(c => (
+                          <button key={c} className={`cat-item ${selectedCat === c ? "active" : ""}`}
+                            onClick={e => { e.stopPropagation(); setSelectedCat(c); setCatMenuOpen(false); }}>
+                            <span className="cat-item-icon">{c === "All" ? "🔲" : CAT_ICONS[c]}</span>
+                            {c === "All" ? "All categories" : c}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <span className="ctrl-sep"/>
+                <div className="filter-group">
+                  <span className="filter-label">Show</span>
+                  <button className={`filter-btn ${commonFilter === "All" ? "active" : ""}`} onClick={() => setCommonFilter("All")}>All</button>
+                  <button className={`filter-btn ${commonFilter === "Most Common" ? "gold-active" : ""}`} onClick={() => setCommonFilter("Most Common")}>★ Core 12</button>
+                  <button className={`filter-btn ${commonFilter === "Extended" ? "gray-active" : ""}`} onClick={() => setCommonFilter("Extended")}>Extended</button>
+                </div>
+                <span className="ctrl-sep"/>
+                <div className="filter-group">
+                  <span className="filter-label">Sort</span>
+                  <select className="sort-select" value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                    {SORT_OPTIONS.map(o => <option key={o}>{o}</option>)}
+                  </select>
+                </div>
+                <div className="count-pill">{filtered.length} shown</div>
+              </div>
+
+              {/* Grid + Sidebar */}
+              <div className="main-layout">
+                <div className="grid-pane">
+                  <div className="grid-meta">
+                    <span className="grid-meta-text">{filtered.length} of {ARCHETYPES.length} archetypes · ★ = Core Jung / Mark & Pearson 12</span>
+                    <span className="grid-meta-hint">Click a card to expand · set primary or secondary inside</span>
+                  </div>
+                  <div className="arch-grid">
+                    {filtered.map(a => {
+                      const isPrimary = a.id === primaryId;
+                      const isSecondary = a.id === secondaryId;
+                      const isCmp = compareIds.includes(a.id);
+                      const isExp = expandedId === a.id;
+                      return (
+                        <div key={a.id}
+                          className={`arch-card ${isPrimary ? "is-primary" : ""} ${isSecondary ? "is-secondary" : ""} ${isCmp ? "is-compare" : ""}`}
+                          style={{"--cc": a.color, "--cc-light": a.bg}}
+                          onClick={() => { setExpandedId(isExp ? null : a.id); if (!isExp) setExpandedSection("desc"); }}>
+
+                          <div className="card-header">
+                            <span className="card-emoji">{a.emoji}</span>
+                            <div className="card-badges">
+                              {isPrimary && <span className="badge badge-primary" style={{"--cc": a.color}}>Primary</span>}
+                              {isSecondary && <span className="badge badge-secondary" style={{"--cc": a.color}}>Secondary</span>}
+                              {isCmp && <span className="badge badge-compare">Compare</span>}
+                              {a.common && !isPrimary && !isSecondary && !isCmp && <span className="badge badge-core">★ Core</span>}
+                            </div>
+                          </div>
+
+                          <div className="card-name">{a.name}</div>
+                          <div className="card-cat" style={{color: a.color}}>{a.category}</div>
+                          <div className="card-nouns">
+                            {a.nouns.map(n => <span key={n} className="noun-tag">{n}</span>)}
+                          </div>
+                          <div className="card-core">{a.core}</div>
+
+                          {isExp && (
+                            <div className="card-expand" onClick={e => e.stopPropagation()}>
+                              <div className="expand-tabs">
+                                <button className={`expand-tab ${expandedSection === "desc" ? "active" : ""}`} onClick={() => setExpandedSection("desc")}>Overview</button>
+                                <button className={`expand-tab ${expandedSection === "myth" ? "active" : ""}`} onClick={() => setExpandedSection("myth")}>Mythology</button>
+                              </div>
+
+                              {expandedSection === "desc" && (<>
+                                <div className="expand-desc">{a.description}</div>
+                                <div className="expand-row">
+                                  <span className="expand-lbl">Voice</span>
+                                  <span className="expand-val">{a.brandVoice}</span>
+                                </div>
+                                <div className="expand-row">
+                                  <span className="expand-lbl">Brands</span>
+                                  <div className="brand-tags" style={{"--cc": a.color, "--cc-light": a.bg}}>
+                                    {a.brands.split(",").map(b => <span key={b} className="brand-tag">{b.trim()}</span>)}
+                                  </div>
+                                </div>
+                                <div className="expand-row">
+                                  <span className="expand-lbl">Hook</span>
+                                  <span className="expand-val" style={{fontStyle: "italic"}}>"{a.storyHook}"</span>
+                                </div>
+                                <div className="expand-row">
+                                  <span className="expand-lbl">Tension</span>
+                                  <span className="expand-tension">{a.tension}</span>
+                                </div>
+                              </>)}
+
+                              {expandedSection === "myth" && (<>
+                                <div className="myth-origin">Origin: {a.origin}</div>
+                                <div className="myth-body">{a.mythology}</div>
+                                <div className="expand-row">
+                                  <span className="expand-lbl">Famous</span>
+                                  <span className="myth-examples">{a.famousExamples}</span>
+                                </div>
+                              </>)}
+
+                              <div className="card-actions">
+                                {!isPrimary && (
+                                  <button className="action-btn set-p" style={{"--cc": a.color}}
+                                    onClick={() => { setPrimaryId(a.id); if (secondaryId === a.id) setSecondaryId(null); }}>
+                                    Set Primary
+                                  </button>
+                                )}
+                                {!isSecondary && (
+                                  <button className="action-btn set-s" style={{"--cc": a.color, "--cc-light": a.bg}}
+                                    onClick={() => { setSecondaryId(a.id); if (primaryId === a.id) setPrimaryId(null); }}>
+                                    Set Secondary
+                                  </button>
+                                )}
+                                {isPrimary && <button className="action-btn remove" onClick={() => setPrimaryId(null)}>Remove Primary</button>}
+                                {isSecondary && <button className="action-btn remove" onClick={() => setSecondaryId(null)}>Remove Secondary</button>}
+                                <button className={`action-btn compare ${isCmp ? "in-compare" : ""}`} onClick={() => toggleCompare(a.id)}>
+                                  {isCmp ? "In Compare ✓" : "Add to Compare"}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── Sidebar ── */}
+                <div className="sidebar" style={{"--pc": primary?.color || "#1A1A18"}}>
+
+                  {/* Primary slot */}
+                  <div className="sidebar-section">
+                    <div className="sidebar-label">Primary Archetype</div>
+                    {primary ? (
+                      <div className="selected-card" style={{"--cc": primary.color}}>
+                        <button className="remove-x" onClick={() => setPrimaryId(null)}>✕</button>
+                        <div className="selected-card-header">
+                          <span className="sel-emoji">{primary.emoji}</span>
+                          <div>
+                            <div className="sel-name">{primary.name}</div>
+                            <div className="sel-weight" style={{color: primary.color}}>{weight}% weight</div>
+                          </div>
+                        </div>
+                        <div className="sel-core">{primary.core}</div>
+                      </div>
+                    ) : (
+                      <div className="empty-slot">
+                        <span>⚔️</span>
+                        Expand a card then<br/>click <strong>Set Primary</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Secondary slot */}
+                  <div className="sidebar-section">
+                    <div className="sidebar-label">Secondary Archetype</div>
+                    {secondary ? (
+                      <div className="selected-card secondary" style={{"--cc": secondary.color}}>
+                        <button className="remove-x" onClick={() => setSecondaryId(null)}>✕</button>
+                        <div className="selected-card-header">
+                          <span className="sel-emoji">{secondary.emoji}</span>
+                          <div>
+                            <div className="sel-name">{secondary.name}</div>
+                            <div className="sel-weight" style={{color: secondary.color}}>{100-weight}% weight</div>
+                          </div>
+                        </div>
+                        <div className="sel-core">{secondary.core}</div>
+                      </div>
+                    ) : (
+                      <div className="empty-slot">
+                        <span>✨</span>
+                        Expand a second card<br/>then click <strong>Set Secondary</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Blend ratio */}
+                  {primary && secondary && (
+                    <div className="sidebar-section">
+                      <div className="sidebar-label">Blend Ratio</div>
+                      <div className="ratio-bar">
+                        <div className="ratio-bar-primary" style={{width: `${weight}%`, background: primary.color}}/>
+                        <div className="ratio-bar-secondary" style={{background: secondary.color}}/>
+                      </div>
+                      <div className="ratio-names">
+                        <span className="ratio-name" style={{color: primary.color}}>{primary.name}</span>
+                        <span className="ratio-name" style={{color: secondary.color}}>{secondary.name}</span>
+                      </div>
+                      <input
+                        type="range" min="50" max="95" value={weight}
+                        className="blend-slider"
+                        style={{"--pct": `${(weight-50)/45*100}%`, "--pc": primary.color}}
+                        onChange={e => setWeight(Number(e.target.value))}
+                      />
+                      <div className="blend-pcts">
+                        <span style={{color: primary.color}}>{weight}%</span>
+                        <span style={{color: secondary.color}}>{100-weight}%</span>
+                      </div>
+                      <div className="preset-btns">
+                        {[[80,20],[70,30],[60,40],[50,50]].map(([p]) => (
+                          <button key={p} className={`preset-btn ${weight === p ? "active" : ""}`} onClick={() => setWeight(p)}>{p}/{100-p}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Interaction */}
+                  {interaction && (
+                    <div className="sidebar-section">
+                      <div className="sidebar-label">Archetype Interaction</div>
+                      <div className="interaction-box">
+                        <div className="int-title">{interaction.title}</div>
+                        <div className="int-body">{interaction.summary}</div>
+                        <div className="int-tension">⚠ {interaction.tension}</div>
+                        <div className="int-eg">e.g. {interaction.example}</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Summary */}
+                  <div className="sidebar-section">
+                    <div className="sidebar-label">Brand Positioning Summary</div>
+                    {primary ? (<>
+                      <div className="summary-box" style={{"--pc": primary.color}}>
+                        <div className="summary-text">{summaryText}</div>
+                      </div>
+                      <button className={`copy-btn ${copied ? "done" : ""}`} onClick={handleCopy}>
+                        {copied ? "✓ Copied to clipboard" : "Copy full brief"}
+                      </button>
+                    </>) : (
+                      <div className="no-summary">Select a primary archetype to generate your brand positioning summary.</div>
+                    )}
+                  </div>
+
+                </div>
+              </div>
+            </>)}
+
+            {/* ══════════════ COMPARE TAB ══════════════ */}
+            {activeTab === "compare" && (
+              <div className="compare-pane">
+                <div className="compare-header">
+                  <div>
+                    <div className="compare-title">Archetype Comparison</div>
+                    <div className="compare-sub">Add up to 4 archetypes from the Selector tab to compare side by side</div>
+                  </div>
+                  {compareIds.length > 0 && (
+                    <button className="action-btn remove" onClick={() => setCompareIds([])}>Clear all</button>
+                  )}
+                </div>
+
+                <div className="compare-grid">
+                  {compareArchetypes.map(a => (
+                    <div key={a.id} className="compare-card" style={{"--cc": a.color}}>
+                      <div className="compare-card-header">
+                        <span className="compare-emoji">{a.emoji}</span>
+                        <button className="compare-rm" onClick={() => toggleCompare(a.id)}>Remove</button>
+                      </div>
+                      <div className="compare-name" style={{color: a.color}}>{a.name}</div>
+                      <div className="compare-cat" style={{color: a.color}}>{a.category}</div>
+                      {a.common && <span className="badge badge-core" style={{marginBottom: 10, display: "inline-block"}}>★ Core 12</span>}
+
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Nouns</div>
+                        <div className="compare-nouns">{a.nouns.map(n => <span key={n} className="compare-noun">{n}</span>)}</div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Core Drive</div>
+                        <div className="compare-text" style={{fontStyle: "italic"}}>{a.core}</div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Brand Voice</div>
+                        <div className="compare-text">{a.brandVoice}</div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Description</div>
+                        <div className="compare-text">{a.description}</div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Story Hook</div>
+                        <div className="compare-hook">"{a.storyHook}"</div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Brand Examples</div>
+                        <div className="brand-tags" style={{"--cc": a.color, "--cc-light": a.bg}}>
+                          {a.brands.split(",").map(b => <span key={b} className="brand-tag">{b.trim()}</span>)}
+                        </div>
+                      </div>
+                      <div className="compare-section">
+                        <div className="compare-sec-lbl">Tension</div>
+                        <div className="compare-tension">{a.tension}</div>
+                      </div>
+                      <div className="compare-actions">
+                        <button className="action-btn set-p" style={{"--cc": a.color}}
+                          onClick={() => { setPrimaryId(a.id); setActiveTab("selector"); }}>Set Primary</button>
+                        <button className="action-btn set-s" style={{"--cc": a.color, "--cc-light": a.bg}}
+                          onClick={() => { setSecondaryId(a.id); setActiveTab("selector"); }}>Set Secondary</button>
+                      </div>
+                    </div>
+                  ))}
+                  {Array.from({length: Math.max(0, 4 - compareArchetypes.length)}).map((_, i) => (
+                    <div key={i} className="compare-placeholder">
+                      Add an archetype<br/>from the Selector tab<br/><span style={{fontSize:"0.6rem"}}>(up to 4)</span>
+                    </div>
+                  ))}
+                </div>
+
+                {compareArchetypes.length >= 2 && (<>
+                  <div className="interactions-header">Archetype Interactions</div>
+                  <div className="interactions-grid">
+                    {compareArchetypes.flatMap((a, i) => compareArchetypes.slice(i+1).map(b => {
+                      const int = getInteraction(a, b);
+                      return int ? (
+                        <div key={`${a.id}+${b.id}`} className="int-card" style={{"--cc": a.color}}>
+                          <div className="int-pair">{a.name} × {b.name}</div>
+                          <div className="int-title">{int.title}</div>
+                          <div className="int-body">{int.summary}</div>
+                          <div className="int-tension">⚠ {int.tension}</div>
+                          <div className="int-eg">e.g. {int.example}</div>
+                        </div>
+                      ) : (
+                        <div key={`${a.id}+${b.id}`} className="int-card" style={{"--cc": "#DDD"}}>
+                          <div className="int-pair">{a.name} × {b.name}</div>
+                          <div style={{fontSize:"0.68rem",color:"#C0BAB0",fontStyle:"italic",marginTop:6,lineHeight:1.65}}>No predefined interaction — uncharted territory.</div>
+                        </div>
+                      );
+                    }))}
+                  </div>
+                </>)}
+
+                {compareArchetypes.length < 2 && (
+                  <div className="empty-compare">
+                    Expand any archetype card in the Selector tab<br/>and click <strong>"Add to Compare"</strong>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ══════════════ GUIDE TAB ══════════════ */}
+            {activeTab === "guide" && (
+              <div className="guide-pane">
+                <div className="guide-inner">
+                  <div className="guide-title">How to Use Brand Archetypes<br/>in Storytelling & Marketing</div>
+                  <div className="guide-sub">A strategic framework for brand strategists</div>
+
+                  <div className="guide-blocks">
+                    {[
+                      {n:"01",t:"What Archetypes Are — and Aren't",b:"Brand archetypes aren't personality types or mood boards. They are the deep structural roles a brand plays in the lives of its audience — drawn from Carl Jung's theory of universal patterns in the human psyche (1919) and popularised as a brand framework by Margaret Mark and Carol S. Pearson in The Hero and the Outlaw (2001). When a brand consistently occupies one of these roles, it becomes instantly recognisable and emotionally resonant without needing to explain itself."},
+                      {n:"02",t:"The Core 12 vs Extended Archetypes",b:"The original 12 archetypes (marked ★ Core 12 in the Selector) come from Mark & Pearson's seminal framework — the ones most validated by market research and consumer psychology. The extended archetypes draw on Campbell's narrative functions (Herald, Mentor, Trickster, Ally, Shapeshifter, Villain, Sidekick, Wanderer). The Core 12 are the safest primary choices; extended archetypes work powerfully as secondary archetypes."},
+                      {n:"03",t:"Primary vs Secondary",b:"Almost no brand lives in a single archetype. The primary (80%) is the dominant energy — the through-line of everything from tone of voice to product design. The secondary (20%) is the modifier that creates dimension and prevents the primary from becoming a cliché. An 80/20 Hero/Sage brand is driven and competitive, but speaks with credibility."},
+                      {n:"04",t:"Archetypes and Brand Voice",b:"Each archetype has a characteristic way of speaking, structuring information, and choosing what to emphasise. The Sage leads with evidence. The Rebel uses friction intentionally. The Lover is sensory and immersive. Once you know your archetype, every piece of copy becomes a test: does this sound like us?"},
+                      {n:"05",t:"The Villain in Brand Strategy",b:"The Villain archetype is rarely a primary brand identity — but it is essential for positioning. Because the Villain defines what the Hero opposes. Identifying your brand's 'villain' (the problem, system, or status quo you fight against) is often the fastest route to compelling narrative."},
+                      {n:"06",t:"Common Mistakes",b:"The most common error is choosing an aspirational archetype rather than an honest one. Brands that claim to be Rebels while operating like Rulers are quickly exposed. The second mistake is choosing too many archetypes. Choose one primary, one secondary. Hold them firmly. The third mistake is applying archetypes only to advertising — they must run through culture, hiring, product, and customer experience."},
+                    ].map(b => (
+                      <div key={b.n} className="guide-block">
+                        <div className="guide-num">{b.n}</div>
+                        <div className="guide-block-title">{b.t}</div>
+                        <div className="guide-block-body">{b.b}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="story-section">
+                    <div className="story-title">The Archetype Story Arc: A Five-Stage Framework</div>
+                    <div className="story-body">Every powerful brand campaign is a story. The archetype determines the role your brand plays in that arc — and crucially, how your customer experiences themselves in relation to your brand.</div>
+                    <div className="stages">
+                      {[
+                        {n:"Stage 1",t:"The Ordinary World",b:"Show the audience's current reality — relatable, honest, often flawed. Root it in a specific tension that your audience recognises immediately."},
+                        {n:"Stage 2",t:"The Call to Adventure",b:"Something disrupts the ordinary world. A problem, a desire, an impossible standard. The Herald delivers this moment. Your brand doesn't cause it — it responds to it."},
+                        {n:"Stage 3",t:"The Brand Enters",b:"Your brand arrives as the archetype it truly is. The Mentor guides. The Hero challenges. The Caregiver supports. The Rebel reframes. Be unmistakably yourself."},
+                        {n:"Stage 4",t:"The Transformation",b:"The customer changes — because of what your brand made possible. Show the after with specificity. Vague transformations don't land. The detail is the story."},
+                        {n:"Stage 5",t:"The New World",b:"The customer exists in a different state. Your brand is now part of their identity — not because you told them to, but because the story was true enough to become memory."},
+                      ].map(s => (
+                        <div key={s.n} className="stage">
+                          <div className="stage-num">{s.n}</div>
+                          <div className="stage-name">{s.t}</div>
+                          <div className="stage-body">{s.b}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="channels-section">
+                    <div className="channels-title">Applying Archetypes Across Channels</div>
+                    <div className="channels-grid">
+                      {[
+                        {t:"Campaign Strategy",b:"Start every brief by naming your archetype explicitly. Brief your agency with the archetype's story hook, not just the product benefit. The hook is emotional — the benefit is rational. Lead with the hook.",eg:"Nike (Hero): Don't show the product. Show the moment before the person believed they could."},
+                        {t:"Brand Voice & Copy",b:"Write a one-page voice guide organised around your archetypes. Include three words that capture your primary's voice; three phrases you'd never say; one brand you sound like, one you don't.",eg:"Aesop (Curator + Sage): Never writes 'best' or 'most popular'. Describes ingredients by origin. Treats the reader as intelligent."},
+                        {t:"Social & Content",b:"Each archetype has a natural content format. The Sage publishes essays. The Jester thrives on reactive, lo-fi content. The Creator shares process. The Explorer documents the journey. The Herald breaks news.",eg:"Patagonia (Explorer + Reformer): Long-form environmental journalism. No product posts. The brand is implicit in the cause."},
+                        {t:"Customer Experience",b:"Archetypes don't stop at communications. The Ruler brand has a different return policy than the Caregiver. Map every touchpoint against your archetype.",eg:"Apple (Magician + Creator): Every unboxing is theatre. The first boot experience is designed as a moment of wonder, not a tutorial."},
+                        {t:"Brand Partnerships",b:"Archetype alignment is the fastest way to evaluate partnerships. Two brands sharing the same primary archetype reinforce each other. Misaligned archetypes almost always produce confusion.",eg:"Leica × Aesop: Both Artisan. The collaboration felt inevitable to both audiences."},
+                        {t:"Internal Culture",b:"Archetypes are as useful internally as externally. How you hire, run meetings, and what gets celebrated reflects your archetype. Naming it gives teams a shared vocabulary for what belongs and what doesn't.",eg:"Patagonia: The Explorer archetype informs hiring, office culture, and internal activism."},
+                      ].map(f => (
+                        <div key={f.t} className="channel-card">
+                          <div className="channel-title">{f.t}</div>
+                          <div className="channel-body">{f.b}</div>
+                          <div className="channel-eg">{f.eg}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+          </div>
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
